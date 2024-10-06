@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Button, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import * as Clipboard from "expo-clipboard"
 import useStorage from '../../hooks/useStorage'
 
@@ -7,6 +7,11 @@ const ModalPassword = ({ password, handleClose }) => {
 
     const { saveItem } = useStorage()
     const [idPassword, setIdPassword] = useState("")
+    const [placeholderID, setPlaceholderID] = useState("Onde será usada?")
+
+    const [inputStyle, setInputStyle] = useState(styles.txtInput)
+
+    const [checkModal, setCheckModal] = useState(false)
 
     const handleCopyPassword = async () => {
         await Clipboard.setStringAsync(password)
@@ -16,28 +21,74 @@ const ModalPassword = ({ password, handleClose }) => {
 
         const datestamp = `${date.getDate()}/${date.getUTCMonth() + 1}/${date.getFullYear()}`
         const timestamp = `${date.getHours()}:${date.getMinutes()}`
+
         console.log(timestamp)
         console.log(datestamp)
     }
 
     const handleSavePassword = async () => {
-        const date = new Date()
+        if (idPassword === "") {
+            setPlaceholderID("Você deve inserir o lugar de uso")
+            setInputStyle(styles.txtInputWrong)
 
-        const datestamp = `${date.getDate()}/${date.getUTCMonth() + 1}/${date.getFullYear()}`
-        const timestamp = `${date.getHours()}:${date.getMinutes()}`
-
-        const finalPassoword = {
-            id: idPassword,
-            password: password,
-            createdDay: datestamp,
-            createdTime: timestamp
+            setTimeout(() => {
+                setInputStyle(styles.txtInput)
+                setPlaceholderID("Onde será usada?")
+            }, 3000)
+            return
         }
 
-        await saveItem("@pass", finalPassoword)
+        try {
+
+            const date = new Date()
+
+            const datestamp = `${date.getDate()}/${date.getUTCMonth() + 1}/${date.getFullYear()}`
+            const timestamp = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
+
+            const uniqueId = `${datestamp}${timestamp}`
+
+            const finalPassoword = {
+                id: idPassword,
+                password: password,
+                createdDay: datestamp,
+                createdTime: timestamp,
+                uniqueId: uniqueId
+            }
+
+            await saveItem("_pass", finalPassoword)
+
+            setCheckModal(true)
+
+            setTimeout(() => {
+                setCheckModal(false)
+                handleClose()
+            }, 2000)
+        }
+        catch (error) { console.log(error) }
+    }
+
+    if (checkModal) {
+        return (
+            <View style={styles.modalArea}>
+                <View style={[styles.modal, styles.modalSavePassword]}>
+                    <Text style={styles.modalTitle}>Sucesso!!</Text>
+                    <Image
+                        source={require("../../../assets/done.gif")}
+                        style={styles.checkIcon}
+                    />
+
+                    <View>
+                        <Text>Sua senha foi salva com sucesso.</Text>
+                    </View>
+                </View>
+            </View>
+        )
     }
 
     return (
         <View style={styles.modalArea}>
+
+
             <View style={styles.modal}>
                 <Text style={styles.modalTitle}>Senha Gerada</Text>
 
@@ -46,8 +97,8 @@ const ModalPassword = ({ password, handleClose }) => {
                 </Pressable>
 
                 <TextInput
-                    placeholder='Onde será usada?'
-                    style={styles.txtInput}
+                    placeholder={placeholderID}
+                    style={inputStyle}
                     value={idPassword}
                     onChangeText={(txt) => setIdPassword(txt)}
                 />
@@ -90,7 +141,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        rowGap: 20
+        rowGap: 20,
+
     },
     modalTitle: {
         fontSize: 20,
@@ -103,7 +155,19 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         height: 50,
         paddingLeft: 15,
-        paddingRight: 15
+        paddingRight: 15,
+
+
+    },
+    txtInputWrong: {
+        borderWidth: 2,
+        borderColor: "#f12",
+        width: "90%",
+        borderRadius: 15,
+        height: 50,
+        paddingLeft: 15,
+        paddingRight: 15,
+
 
     },
     areaPassword: {
@@ -143,6 +207,17 @@ const styles = StyleSheet.create({
     },
     btnTextSalvar: {
         color: "#fff"
+    },
+
+    modalSavePassword: {
+        rowGap: 0
+    },
+
+    checkIcon: {
+        width: 200,
+        height: 200,
+        // backgroundColor: "#f12"
     }
+
 
 })

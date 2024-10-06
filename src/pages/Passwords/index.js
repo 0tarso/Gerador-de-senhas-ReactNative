@@ -1,43 +1,98 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useIsFocused } from '@react-navigation/native'
 import useStorage from '../../hooks/useStorage'
+import PasswordItem from '../../components/PasswordItem'
+import { StatusBar } from 'expo-status-bar'
 
 const Passwords = () => {
     const focused = useIsFocused()
 
-    const { getItem } = useStorage()
+    const { getItem, removeItem } = useStorage()
 
     const [listPasswords, setListPasswords] = useState([])
 
+    const [loading, setLoading] = useState(true)
+
+    const showAlertRemove = async (data) => {
+        Alert.alert(
+            "Você tem certeza?",
+            `Confirme a exclusão da senha: \n${data}`,
+            [
+                { text: "Cancelar" },
+                { text: "Excluir", onPress: () => handleDeleteItem(data) }
+            ],
+            { cancelable: true }
+        )
+    }
+
+    const handleDeleteItem = async (id) => {
+
+
+        try {
+            const resultPasswords = await removeItem("_pass", id)
+            setListPasswords(resultPasswords)
+            console.log("removido")
+
+        }
+        catch (error) {
+            console.log(error)
+        }
+
+        console.log(listPasswords)
+    }
 
     useEffect(() => {
-
         const loadPasswords = async () => {
-            const passwords = await getItem("@pass")
+            const passwords = await getItem("_pass")
 
             setListPasswords(passwords)
 
             console.log("senhas", passwords)
+
+
         }
-        console.log(new Date())
-        loadPasswords()
+        if (focused) {
+            loadPasswords()
+            setLoading(false)
+        }
     }, [focused])
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator color="#004aad" size="large" />
+            </View>
+        )
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            {/* <StatusBar backgroundColor='#351ade' style='light' /> */}
             <View style={styles.header}>
 
                 <Text style={styles.headerText}>Minhas Senhas</Text>
 
             </View>
 
-            <FlatList
-                data={listPasswords}
-                renderItem={({ item }) => <Text>{item.id}</Text>}
-                keyExtractor={(item) => item.id}
-            />
+            {listPasswords.length > 0 ? (
+
+                <FlatList
+                    data={listPasswords}
+                    renderItem={({ item }) => <PasswordItem data={item} showAlertRemove={showAlertRemove} />}
+                    keyExtractor={(item) => item.uniqueId}
+                />
+
+            ) : (
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffff" }}>
+                    <Image
+                        source={require("../../../assets/emptyFolder.gif")}
+                        style={{ width: 150, height: 150 }}
+                    />
+                    <Text style={{ fontSize: 20 }}>Você ainda não tem senhas salvas</Text>
+                </View>
+            )}
 
 
         </SafeAreaView>

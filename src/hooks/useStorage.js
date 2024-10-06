@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React from 'react'
-import Passwords from '../pages/Passwords'
+
+import * as SecureStore from "expo-secure-store"
 
 const useStorage = () => {
 
     const getItem = async (key) => {
         try {
-            const passwords = await AsyncStorage.getItem(key)
+            const passwords = await SecureStore.getItemAsync(key)
             return JSON.parse(passwords) || []
         }
         catch (error) {
@@ -22,7 +22,7 @@ const useStorage = () => {
 
             passwords.push(value)
 
-            await AsyncStorage.setItem(key, JSON.stringify(passwords))
+            await SecureStore.setItemAsync(key, JSON.stringify(passwords))
 
             console.log("Senha salvaaaa")
         }
@@ -37,10 +37,10 @@ const useStorage = () => {
             let passwords = await getItem(key)
 
             let myPassowrds = passwords.filter((password) => {
-                return (password != item)
+                return (password.id != item)
             })
 
-            await AsyncStorage.setItem(key, JSON.stringify(myPassowrds))
+            await SecureStore.setItemAsync(key, JSON.stringify(myPassowrds))
             return myPassowrds
         }
         catch (error) {

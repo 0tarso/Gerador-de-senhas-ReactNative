@@ -1,14 +1,15 @@
 import Slider from '@react-native-community/slider';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ModalPassword from '../../components/ModalPassword';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import * as SecureStore from "expo-secure-store"
+import { AuthContext } from '../../contexts/AuthContext';
 let charset = "abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVXWYZ123456789"
 
 export default function Home() {
 
+    const { handleSignOut } = useContext(AuthContext)
     const [passwordSize, setPasswordSize] = useState(6)
 
     const [passwordValue, setPasswordValue] = useState("")
@@ -28,11 +29,21 @@ export default function Home() {
     }
 
     const handleClearStorage = async () => {
-        await AsyncStorage.clear()
-        alert("certoo")
+        try {
+            await SecureStore.deleteItemAsync("_pass")
+            alert("certoo")
+        }
+        catch (error) {
+            console.error("Ops, erro ao apagar: ", error)
+        }
+    }
+
+    const handleLogout = async () => {
+        await handleSignOut()
     }
     return (
         <View style={styles.container}>
+            <StatusBar backgroundColor='#fff' style='dark' />
             <Image
                 source={require("../../../assets/logo.png")}
                 style={styles.logo}
@@ -57,11 +68,10 @@ export default function Home() {
                 <Text style={styles.txtBtn}>Gerar Senha</Text>
             </TouchableOpacity>
 
-
             <TouchableOpacity style={styles.areaBtn}
-                onPress={handleClearStorage}
+                onPress={handleLogout}
             >
-                <Text style={styles.txtBtn}>Limpar Storage</Text>
+                <Text style={styles.txtBtn}>Sair</Text>
             </TouchableOpacity>
 
             <Modal
@@ -69,8 +79,6 @@ export default function Home() {
                 visible={modalVisible}
                 animationType='fade'
                 transparent={true}
-
-
             >
                 <ModalPassword
                     password={passwordValue}
