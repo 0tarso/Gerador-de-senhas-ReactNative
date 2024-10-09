@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as SecureStore from "expo-secure-store"
 
@@ -48,10 +47,82 @@ const useStorage = () => {
         }
     }
 
+    const firstLaunch = async () => {
+        try {
+            let first = await SecureStore.getItemAsync("_firstLaunch")
+
+            console.log(first)
+            if (first === null) {
+                return false
+            }
+            else {
+                return true
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    const clearCache = async () => {
+        await SecureStore.deleteItemAsync("_firstLaunch")
+    }
+
+    const disableFirstLaunch = async () => {
+        try {
+            await SecureStore.setItemAsync("_firstLaunch", "false")
+            console.log("First Launch desligado")
+
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    const createUser = async (id, password) => {
+        try {
+            const user = { id: id, password: password }
+
+            await SecureStore.setItemAsync("_user", JSON.stringify(user))
+
+            console.log("Usuario criado")
+            console.log(user)
+            return user
+        }
+        catch (error) {
+            console.error("Erro ao criar usuario: ", error)
+        }
+    }
+
+    const signIn = async (id, password) => {
+        try {
+            const user = await SecureStore.getItemAsync("_user")
+            const userCredential = JSON.parse(user)
+
+            if (id === userCredential.id && password === userCredential.password) {
+                console.log("Acesso liberado")
+                return userCredential
+            }
+            else {
+                console.log("Usuário inválido")
+                return null
+            }
+
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
     return {
         getItem,
         saveItem,
-        removeItem
+        removeItem,
+        firstLaunch,
+        createUser,
+        signIn,
+        disableFirstLaunch,
+        clearCache
     }
 }
 

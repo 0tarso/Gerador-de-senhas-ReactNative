@@ -1,29 +1,42 @@
 import React, { useState, useContext } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { AuthContext } from '../../contexts/AuthContext'
+import { useNavigation } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import EmailScreen from '../EmailScreen'
+import useStorage from '../../hooks/useStorage'
+import * as SecureStore from "expo-secure-store"
 
 const Login = () => {
-    const { handleLogin, loginWithGoogle } = useContext(AuthContext)
+    const nav = useNavigation()
 
-    const handleSubmitLogin = () => {
-        if (email === "" || password === "") {
-            Alert.alert(
-                "Preencha todos os campos",
-                "Email e senha são obrigatórios!"
-            )
-            return
-        }
-        handleLogin(email, password)
-    }
 
-    const handleSubmitGoogle = async () => {
-
-        await loginWithGoogle()
-    }
+    const { signIn, clearCache } = useStorage()
+    const { isFirstLaunch, setUser } = useContext(AuthContext)
 
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
+
+    const clearStorage = async () => {
+        await SecureStore.deleteItemAsync("_user")
+        await clearCache()
+        console.log("cache limpo")
+
+        console.log(isFirstLaunch)
+    }
+
+
+
+    const handleLogin = async () => {
+        const user = await signIn(email, password)
+        setUser(user)
+    }
+
+    if (isFirstLaunch) {
+        return (
+            <EmailScreen />
+        );
+    }
 
     return (
         <KeyboardAvoidingView style={styles.container}
@@ -54,15 +67,15 @@ const Login = () => {
                 </View>
 
                 <TouchableOpacity style={styles.areaBtn}
-                    onPress={handleSubmitLogin}
+                    onPress={handleLogin}
                 >
                     <Text style={styles.txtBtn}>Login</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.areaBtn}
-                    onPress={handleSubmitGoogle}
+                <TouchableOpacity style={[styles.areaBtn, styles.areaBtnCriar]}
+                    onPress={clearStorage}
                 >
-                    <Text style={styles.txtBtn}>Usar Conta Google</Text>
+                    <Text style={[styles.txtBtn, styles.txtBtnCriar]}>Limpar dados</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -123,9 +136,17 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 10
     },
+    areaBtnCriar: {
+        backgroundColor: "transparent",
+        marginTop: 0,
+
+    },
     txtBtn: {
         fontSize: 18,
         fontWeight: '600',
         color: "#656565"
     },
+    txtBtnCriar: {
+        color: "#fff"
+    }
 })

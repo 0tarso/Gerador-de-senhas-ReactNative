@@ -1,10 +1,39 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import Login from '../pages/Login'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import EmailScreen from '../pages/EmailScreen'
+import PasswordScreen from '../pages/PasswordScreen'
+
+const Stack = createNativeStackNavigator()
 
 const AuthRoutes = () => {
     return (
-        <Login />
+        <Stack.Navigator>
+            <Stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="Login"
+                component={Login}
+            />
+
+            <Stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name='Email'
+                component={EmailScreen}
+            />
+
+            <Stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name='Password'
+                component={PasswordScreen}
+            />
+        </Stack.Navigator>
     )
 }
 

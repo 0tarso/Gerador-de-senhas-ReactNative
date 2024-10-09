@@ -5,11 +5,14 @@ import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 import ModalPassword from '../../components/ModalPassword';
 import * as SecureStore from "expo-secure-store"
 import { AuthContext } from '../../contexts/AuthContext';
+import useStorage from '../../hooks/useStorage';
 let charset = "abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVXWYZ123456789"
 
 export default function Home() {
 
-    const { handleSignOut } = useContext(AuthContext)
+    const { handleSignOut, setUser } = useContext(AuthContext)
+
+
     const [passwordSize, setPasswordSize] = useState(6)
 
     const [passwordValue, setPasswordValue] = useState("")
@@ -38,8 +41,8 @@ export default function Home() {
         }
     }
 
-    const handleLogout = async () => {
-        await handleSignOut()
+    const handleLogout = () => {
+        setUser(null)
     }
     return (
         <View style={styles.container}>
