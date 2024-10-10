@@ -1,10 +1,12 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { NavigationContainer } from '@react-navigation/native'
 import React from 'react'
-import Home from '../pages/Home'
-import Passwords from '../pages/Passwords'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+
+import Passwords from '../pages/Passwords'
+import Home from '../pages/Home'
+
 
 const AppRoutes = () => {
 

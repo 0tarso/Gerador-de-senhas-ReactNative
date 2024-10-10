@@ -1,14 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import Home from './src/pages/Home';
-import Routes from './src/routes/routes';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+
 import { AuthProvider } from './src/contexts/AuthContext';
+import Routes from './src/routes/routes';
+
 
 export default function App() {
   return (
     <NavigationContainer style={styles.container}>
       <AuthProvider>
+        <StatusBar style='light' backgroundColor='#000' />
         <Routes />
       </AuthProvider>
     </NavigationContainer>
@@ -19,7 +21,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'center',
     justifyContent: 'center',
   },
 

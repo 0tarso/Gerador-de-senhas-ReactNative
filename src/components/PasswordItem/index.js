@@ -1,14 +1,10 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import * as Clipboard from "expo-clipboard"
-import useStorage from '../../hooks/useStorage'
 
 const PasswordItem = ({ data, showAlertRemove }) => {
-    const { removeItem } = useStorage()
     const [showPassword, setShowPassword] = useState(true)
-
-
 
     const handleShowPassword = () => {
         if (showPassword) {
@@ -21,7 +17,7 @@ const PasswordItem = ({ data, showAlertRemove }) => {
 
     const handleCopy = async () => {
         await Clipboard.setStringAsync(data.password)
-        console.log("senhaCopiada")
+        Alert.alert('Senha copiada', `${data.password} copiada com sucesso`)
     }
     return (
         <View style={styles.container}>
@@ -59,7 +55,6 @@ const styles = StyleSheet.create({
         borderColor: "#cccccc",
         width: "95%",
         borderRadius: 15,
-        // height: 80,
         padding: 10
     },
 

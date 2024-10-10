@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View, Alert } from 'react-native'
+
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useIsFocused } from '@react-navigation/native'
+
 import useStorage from '../../hooks/useStorage'
+
 import PasswordItem from '../../components/PasswordItem'
-import { StatusBar } from 'expo-status-bar'
 
 const Passwords = () => {
     const focused = useIsFocused()
@@ -14,6 +16,22 @@ const Passwords = () => {
     const [listPasswords, setListPasswords] = useState([])
 
     const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const loadPasswords = async () => {
+            const passwords = await getItem("_pass")
+
+            setListPasswords(passwords)
+
+            console.log("senhas", passwords)
+        }
+
+        if (focused) {
+            loadPasswords()
+            setLoading(false)
+        }
+
+    }, [focused])
 
     const showAlertRemove = async (data) => {
         Alert.alert(
@@ -28,8 +46,6 @@ const Passwords = () => {
     }
 
     const handleDeleteItem = async (id) => {
-
-
         try {
             const resultPasswords = await removeItem("_pass", id)
             setListPasswords(resultPasswords)
@@ -43,21 +59,6 @@ const Passwords = () => {
         console.log(listPasswords)
     }
 
-    useEffect(() => {
-        const loadPasswords = async () => {
-            const passwords = await getItem("_pass")
-
-            setListPasswords(passwords)
-
-            console.log("senhas", passwords)
-
-
-        }
-        if (focused) {
-            loadPasswords()
-            setLoading(false)
-        }
-    }, [focused])
 
     if (loading) {
         return (
@@ -69,7 +70,7 @@ const Passwords = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            {/* <StatusBar backgroundColor='#351ade' style='light' /> */}
+
             <View style={styles.header}>
 
                 <Text style={styles.headerText}>Minhas Senhas</Text>

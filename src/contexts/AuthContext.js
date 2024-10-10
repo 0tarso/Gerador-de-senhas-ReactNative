@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkFirstLaunch = async () => {
 
-
+            //verifica se é a primeira vez do usuário no aplicativo
             const first = await firstLaunch()
 
             if (first === false) {

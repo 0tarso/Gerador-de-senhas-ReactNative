@@ -1,16 +1,17 @@
-import Slider from '@react-native-community/slider';
-import { StatusBar } from 'expo-status-bar';
 import { useState, useContext } from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import ModalPassword from '../../components/ModalPassword';
+import Slider from '@react-native-community/slider';
+
 import * as SecureStore from "expo-secure-store"
 import { AuthContext } from '../../contexts/AuthContext';
-import useStorage from '../../hooks/useStorage';
+
+import ModalPassword from '../../components/ModalPassword';
+
 let charset = "abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVXWYZ123456789"
 
 export default function Home() {
 
-    const { handleSignOut, setUser } = useContext(AuthContext)
+    const { setUser } = useContext(AuthContext)
 
 
     const [passwordSize, setPasswordSize] = useState(6)
@@ -46,7 +47,6 @@ export default function Home() {
     }
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor='#fff' style='dark' />
             <Image
                 source={require("../../../assets/logo.png")}
                 style={styles.logo}

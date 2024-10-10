@@ -1,7 +1,7 @@
 import React from 'react'
-import { Text, View } from 'react-native'
-import Login from '../pages/Login'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+
+import Login from '../pages/Login'
 import EmailScreen from '../pages/EmailScreen'
 import PasswordScreen from '../pages/PasswordScreen'
 

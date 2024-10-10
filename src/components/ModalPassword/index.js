@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { Alert, Button, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+
 import * as Clipboard from "expo-clipboard"
+
 import useStorage from '../../hooks/useStorage'
 
 const ModalPassword = ({ password, handleClose }) => {
@@ -17,13 +19,6 @@ const ModalPassword = ({ password, handleClose }) => {
         await Clipboard.setStringAsync(password)
         console.log("senhaCopiada")
 
-        const date = new Date()
-
-        const datestamp = `${date.getDate()}/${date.getUTCMonth() + 1}/${date.getFullYear()}`
-        const timestamp = `${date.getHours()}:${date.getMinutes()}`
-
-        console.log(timestamp)
-        console.log(datestamp)
     }
 
     const handleSavePassword = async () => {
@@ -47,7 +42,7 @@ const ModalPassword = ({ password, handleClose }) => {
 
             const uniqueId = `${datestamp}${timestamp}`
 
-            const finalPassoword = {
+            const finalPassword = {
                 id: idPassword,
                 password: password,
                 createdDay: datestamp,
@@ -55,7 +50,7 @@ const ModalPassword = ({ password, handleClose }) => {
                 uniqueId: uniqueId
             }
 
-            await saveItem("_pass", finalPassoword)
+            await saveItem("_pass", finalPassword)
 
             setCheckModal(true)
 
@@ -64,7 +59,9 @@ const ModalPassword = ({ password, handleClose }) => {
                 handleClose()
             }, 2000)
         }
-        catch (error) { console.log(error) }
+        catch (error) {
+            console.log("Ops, erro ao salvar: ", error)
+        }
     }
 
     if (checkModal) {

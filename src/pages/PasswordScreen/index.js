@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { AuthContext } from '../../contexts/AuthContext'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../../firebaseConnection'
-import { useEvent } from 'react-native-reanimated'
+
 import { useNavigation } from '@react-navigation/native'
-import Feather from '@expo/vector-icons/Feather';
+
+import { AuthContext } from '../../contexts/AuthContext'
 import useStorage from '../../hooks/useStorage'
+
+import Feather from '@expo/vector-icons/Feather';
 
 const PasswordScreen = () => {
     const nav = useNavigation()
@@ -71,15 +71,17 @@ const PasswordScreen = () => {
         <KeyboardAvoidingView style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScrollView style={styles.scrollContainer}>
+            <ScrollView style={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={styles.titleContainer}>
                     <Text style={styles.title}>DestravaAí</Text>
                 </View>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.descriptionTitle}>Falta pouco</Text>
                     <Text style={styles.description}>Agora vamos criar a sua senha</Text>
-                    <Text style={styles.description}>Mínimo 6 caracteres - {checkSixChar ? "Feito" : ""}</Text>
-                    <Text style={styles.description}>Ter uma letra maiúscula - {checkUpperChar ? "Feito" : ""}</Text>
+                    <Text style={styles.description}>Mínimo 6 caracteres - {checkSixChar ? ">>> Ok" : ""}</Text>
+                    <Text style={styles.description}>Ter uma letra maiúscula - {checkUpperChar ? ">>> Ok" : ""}</Text>
 
                 </View>
 

@@ -1,35 +1,58 @@
 import React, { useState, useContext } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native'
+
+import Feather from '@expo/vector-icons/Feather';
+
+//contexto para autenticação
 import { AuthContext } from '../../contexts/AuthContext'
-import { useNavigation } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+
+//componente para realização de cadastro
 import EmailScreen from '../EmailScreen'
+
+//hook para funcionalidades de login
 import useStorage from '../../hooks/useStorage'
-import * as SecureStore from "expo-secure-store"
 
 const Login = () => {
-    const nav = useNavigation()
-
 
     const { signIn, clearCache } = useStorage()
-    const { isFirstLaunch, setUser } = useContext(AuthContext)
+    const { isFirstLaunch, setUser, setIsFirstLaunch } = useContext(AuthContext)
 
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
 
-    const clearStorage = async () => {
-        await SecureStore.deleteItemAsync("_user")
-        await clearCache()
-        console.log("cache limpo")
+    const [showPassword, setShowPassword] = useState(true)
+    const [passwordIcon, setPasswordIcon] = useState("eye")
 
+    //função implementada para demonstração
+    const clearStorage = async () => {
+        await clearCache()
+        setIsFirstLaunch(true)
         console.log(isFirstLaunch)
     }
 
 
-
+    //função para autenticação de login
     const handleLogin = async () => {
         const user = await signIn(email, password)
         setUser(user)
+
+        if (user === null) {
+            Alert.alert(
+                "Ops, erro no login",
+                "Usuário ou senha inválida"
+            )
+        }
+    }
+
+    const handleShowPassword = () => {
+        if (showPassword) {
+            setShowPassword(false)
+            setPasswordIcon("eye-off")
+        }
+        else {
+            setShowPassword(true)
+            setPasswordIcon("eye")
+        }
     }
 
     if (isFirstLaunch) {
@@ -42,15 +65,17 @@ const Login = () => {
         <KeyboardAvoidingView style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScrollView style={styles.scrollContainer}>
+            <ScrollView style={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={styles.titleContainer}>
                     <Text style={styles.title}>DestravaAí</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.labelInput}>Email</Text>
+                    <Text style={styles.labelInput}>Seu ID</Text>
                     <TextInput
-                        placeholder="Email aqui"
+                        placeholder="John Doe"
                         style={styles.input}
                         value={email}
                         onChangeText={(text) => setEmail(text)}
@@ -58,12 +83,24 @@ const Login = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.labelInput}>Password</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={password}
-                        onChangeText={(text) => setPassword(text)}
-                    />
+                    <Text style={styles.labelInput}>Senha</Text>
+
+                    <View style={styles.containerInput}>
+
+                        <Feather style={styles.showPasswordBtn}
+                            name={passwordIcon}
+                            size={26}
+                            color="#a0a0a0"
+                            onPress={handleShowPassword}
+                        />
+                        <TextInput
+                            placeholder="*******"
+                            style={styles.input}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
+                            secureTextEntry={showPassword}
+                        />
+                    </View>
                 </View>
 
                 <TouchableOpacity style={styles.areaBtn}
@@ -116,6 +153,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#fff"
     },
+    showPasswordBtn: {
+        position: 'absolute',
+        zIndex: 999,
+        right: 35,
+        top: 15
+    },
     input: {
         backgroundColor: "#fff",
         width: "90%",
@@ -125,6 +168,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         paddingLeft: 10
     },
+
 
     areaBtn: {
         backgroundColor: "#f5f5ff",
